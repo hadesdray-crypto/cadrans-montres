@@ -168,13 +168,17 @@ class MainActivity : Activity() {
         val taille = minOf(resources.displayMetrics.widthPixels * 0.6f, resources.displayMetrics.heightPixels * 0.30f).toInt()
         racine.addView(m, LinearLayout.LayoutParams(taille, taille).apply { gravity = Gravity.CENTER_HORIZONTAL; topMargin = dp(4) })
 
-        // Essai de l'heure
-        val essai = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        essai.addView(texte("Heure d'essai", 15f), LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+        // Essai de l'heure : titre et bouton sur une ligne, curseur pleine largeur dessous
+        val essai = colonne()
+        val ligneEssai = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        ligneEssai.addView(texte("Heure d'essai : glisse pour changer l'heure", 15f), LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+        ligneEssai.addView(bouton("Heure réelle") { minutesEssai = null; m.minutesEssai = null }, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { setMargins(dp(4), 0, dp(8), 0) })
+        essai.addView(ligneEssai)
         val barreHeure = SeekBar(this).apply {
             max = 1439
             val c = Calendar.getInstance()
             progress = minutesEssai ?: (c.get(Calendar.HOUR_OF_DAY) * 60 + c.get(Calendar.MINUTE))
+            setPadding(dp(24), dp(8), dp(24), dp(8))
             setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(s: SeekBar?, v: Int, fromUser: Boolean) {
                     if (fromUser) { minutesEssai = v; m.minutesEssai = v }
@@ -183,8 +187,7 @@ class MainActivity : Activity() {
                 override fun onStopTrackingTouch(s: SeekBar?) {}
             })
         }
-        essai.addView(barreHeure, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-        essai.addView(bouton("Heure réelle") { minutesEssai = null; m.minutesEssai = null }, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { setMargins(dp(4), 0, dp(8), 0) })
+        essai.addView(barreHeure, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
         racine.addView(essai)
 
         val d = ScrollView(this)
